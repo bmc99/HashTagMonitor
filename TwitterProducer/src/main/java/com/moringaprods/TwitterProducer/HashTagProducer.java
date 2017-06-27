@@ -38,11 +38,9 @@ public class HashTagProducer {
             twtReceiver.setSender(senderService);
             twtReceiver.run();
         } catch (Exception e) {
-            senderService.destroy();
-            LOGGER.error(e.toString());
-        } finally {
+            LOGGER.error("error receiving tweets and sending them to Q", e);
+             senderService.destroy();
             context.close();
         }
-
     }
 }

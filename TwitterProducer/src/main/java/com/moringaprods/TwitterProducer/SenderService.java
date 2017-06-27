@@ -7,5 +7,5 @@ package com.moringaprods.TwitterProducer;
 public interface SenderService {
     void initiateProducer();
     void send(String key, String message);
-    void destroy();
+    void close();
 }

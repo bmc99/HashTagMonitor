@@ -14,6 +14,8 @@ import java.util.Properties;
 
 /**
  * Created by mithunbondugula on 6/26/17.
+ * Picks up tweets from all tags topic and moves the tweets to their respective topics based on existance of hashtag
+ * A tweet can contain multiple hashtags - hence uses stream filter rather than stream branch
  */
 @Service("AllHashtagsAnalyzer")
 public class AllHashtagsAnalyzer {
@@ -25,10 +27,10 @@ public class AllHashtagsAnalyzer {
     private String hashTagTopic;
 
     KafkaStreams streams;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllHashtagsAnalyzer.class);
+
 
     public void analyze(String[] tagsToAnalyze){
-        Logger LOGGER = LoggerFactory.getLogger(AllHashtagsAnalyzer.class);
-
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, appId);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
@@ -47,12 +49,19 @@ public class AllHashtagsAnalyzer {
             streams = new KafkaStreams(builder, props);
             //Start and let it run as long as there are messages
             streams.start();
+            //close streams gracefully in case of an uncaught exception
+            streams.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                public void uncaughtException(Thread t, Throwable e) {
+                    streams.close();
+                    LOGGER.error(t + " thread throws exception", e);
+                }
+            });
         }catch (IllegalStateException e){
             //Dont do anything as the stream has already started
-            LOGGER.debug("Tried to restart already started stream");
+            LOGGER.debug("tried to restart an already started stream");
         }
         catch (Exception e){
-            LOGGER.error(e.getStackTrace().toString());
+            LOGGER.error("error while processing all tweets and moving them to specific topics", e);
             streams.close();
         }
     }
@@ -60,6 +69,8 @@ public class AllHashtagsAnalyzer {
     public void close(){
         if (streams!=null){
             streams.close();
+        } else{
+            LOGGER.debug("tried to close a null stream");
         }
     }
 

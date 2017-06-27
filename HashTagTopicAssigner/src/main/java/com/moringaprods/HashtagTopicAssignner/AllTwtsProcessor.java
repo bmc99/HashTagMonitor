@@ -9,8 +9,9 @@ import org.springframework.context.support.AbstractApplicationContext;
  * Created by mithunbondugula on 6/26/17.
  */
 public class AllTwtsProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllTwtsProcessor.class);
+
     public static void main(String[] args) throws Exception {
-        Logger LOGGER = LoggerFactory.getLogger(AllTwtsProcessor.class);
         AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         if(args.length == 0){
@@ -21,6 +22,5 @@ public class AllTwtsProcessor {
         //invoke the analyzer
         AllHashtagsAnalyzer analyzer = (AllHashtagsAnalyzer) context.getBean("AllHashtagsAnalyzer");
         analyzer.analyze(args);
-
     }
 }

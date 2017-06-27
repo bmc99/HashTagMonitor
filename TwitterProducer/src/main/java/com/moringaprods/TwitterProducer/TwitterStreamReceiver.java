@@ -16,8 +16,6 @@ public class TwitterStreamReceiver {
     TwitterStream twitterStream;
     FilterQuery query;
 
-    // set this to true to stop the thread
-    volatile boolean shutdown = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStreamReceiver.class);
 
     public void run(){
@@ -53,18 +51,15 @@ public class TwitterStreamReceiver {
             @Override
             public void onException(Exception ex) {
                 //close the producer in case of an error in the lister
-                LOGGER.error(ex.toString());
+                twitterStream.cleanUp();
+                sender.close();
+                LOGGER.error("twitter4j listener error", ex);
             }
         };
         // Spawns a new thread and listens for activity on the hashTagTopic
         twitterStream.addListener(listener);
         query = new FilterQuery(hashTagTopics);
         twitterStream.filter(query);
-    }
-
-    public void stop(){
-        //sets the interrupt flag
-        this.shutdown = true;
     }
 
     public void setSender(SenderService sender){
