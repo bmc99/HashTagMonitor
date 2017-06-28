@@ -36,8 +36,8 @@ Kafka 0.10.2.1 can be downloaded from Apache Kafka Releases
 
 From desired directory for kafka:
 
-    wget http://mirrors.sonic.net/apache/kafka/0.8.2.1/kafka_2.11-0.10.0.0.tgz
-    tar xvzf kafka_2.11-0.10.0.0.tgz  
+    wget http://apache.claz.org/kafka/0.10.2.1/kafka_2.11-0.10.2.1.tgz
+    tar xvzf kafka_2.11-0.10.2.1.tgz  
 
 Start:
 
