@@ -1,11 +1,11 @@
 ## Synopsis
-A set of micro services built on Kafka(Producer, Stream processor and Consumer) that monitor tweets for provided hashtags.
+A set of micro services built on Kafka(Producer, Stream processor and Consumer) to monitor tweets for provided hashtags.
 
 ## Design considerations
- Rather than build a single monolithic application, this data pipeline is built using 3 micro-services (with assumption that some of the Hashtags will have very high (or exponential) volume). Breaking the application into these parts increases the scalability, maintainability (for example, one of the services can be replaced with a better implementation and without impacting the other two) and resiliency :
-1) TwitterProducer (Aka HashTagProducer): Uses Twitter streaming API to source the Tweets. Service spawns a thread to listen to streaming API for the filtered tweets that contain desired Hashtags. This design maintains the responsibility of filtering the messages at the source - there by eliminating a lot of noise. Received tweets are placed in a Kafka topic without any processing or further filtering. It is possible to run more than one producer to source more Hashtags - static load management.
-2) HashTagTopicAssigner: Uses Kafka stream processing to assign the tweets to Hashtag topics - this is done per tweet as they come in. Each Hashtag will have its own Kafka topic - allowing for clients to subscribe to 1 to many Hashtags in any combination. Multiple instances of the service can be run to based on the load. Service needs to be extended to accept application id so that all the instances can be given same id.
-3) HashTagClient: A client can subscribe to any number of Hashtags. Multiple clients can be spawned at a give time. Client can be extended to accept a group id as input parameter - this way multiple clients can be launched with same group id for Hashtags that have exponential volume. Created datetime of the tweet can be used to maintain tweet order when a client group is subscribed to a topic with multiple partitions.
+Rather than build a single monolithic application, this data pipeline is built using 3 micro-services (with assumption that some of the Hashtags will have very high (or exponential) volume). Breaking the application into these parts increases the scalability, maintainability (for example, one of the services can be replaced with a better implementation and without impacting the other two) and resiliency :
+1) TwitterProducer (Aka HashTagProducer): This micro service uses Twitter streaming API to source the Tweets. The service spawns a thread to listen (non-blocking) to streaming API for the filtered tweets that contain desired Hashtags. This design maintains the responsibility of filtering the messages at the source - there by eliminating a lot of noise. Received tweets are placed in a Kafka topic without any processing or further filtering. It is possible to run more than one producer to source more Hashtags - static load management.
+2) HashTagTopicAssigner: Uses Kafka stream processing to assign the tweets to Hashtag topics - this is done per tweet as they come in. Each Hashtag will have its own Kafka topic - allowing for clients to subscribe to 1 to many Hashtags in any combination. Multiple instances of the service can be run to better balance the load. 
+3) HashTagClient: A client can subscribe to any number of Hashtags. Multiple clients can be spawned at a give time. A client can register and de-register to Hashtags. Created datetime of the tweet can be used to maintain tweet order when a client group is subscribed to a topic with multiple partitions.
 
 ## Installation (for Linux box)
 ### Pre-requisites:
@@ -105,4 +105,5 @@ Producer - from the TwitterProducer folder - service sources tweets and places t
 2) Custom serializer and deserializer can be built to get a lot of tweet attributes not just the status (message)
 
 3) Client can be either be extended to write to varied data sources or exposed as REST API to support more subscribers
+
 
