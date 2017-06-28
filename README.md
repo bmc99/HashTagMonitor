@@ -93,5 +93,16 @@ Producer - from the TwitterProducer folder - service sources tweets and places t
       
       mvn exec:java -Dexec.args="iHeartAwards BestFanArmy Harmonizers Directioners 5SOSFam KCA gameinsight android androidgames GOT7"
 
+### Enchancements
+1) Order across partitions: Created datatime stamped at the source can be used to maintain the order of the messages. A custom timestamp extractors, for instance to retrieve timestamps embedded in the payload of messages can be used like below:
 
+    import java.util.Properties;
+    import org.apache.kafka.streams.StreamsConfig;
+
+    Properties streamsConfiguration = new Properties();
+    streamsConfiguration.put(StreamsConfig.TIMESTAMP_EXTRACTOR_CLASS_CONFIG, MyEventTimeExtractor.class);
+
+2) Custom serializer and deserializer can be built to get a lot of tweet attributes not just the status (message)
+
+3) Client can be either be extended to write to varied data sources or exposed as REST API to support more subscribers
 
