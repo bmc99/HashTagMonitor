@@ -31,16 +31,11 @@ public class HashTagProducer {
         SenderService senderService = (SenderService) context.getBean("KafkaSenderService");
         senderService.initiateProducer();
 
-        try {
-            //start the twitter stream to monitor passed in tags
-            TwitterStreamReceiver twtReceiver = (TwitterStreamReceiver) contextTwitter.getBean("TwitterStreamReceiver");
-            twtReceiver.setHashtagTopics(args);
-            twtReceiver.setSender(senderService);
-            twtReceiver.run();
-        } catch (Exception e) {
-            LOGGER.error("error receiving tweets and sending them to Q", e);
-             senderService.destroy();
-            context.close();
-        }
+        //start the twitter stream to monitor passed in tags
+        TwitterStreamReceiver twtReceiver = (TwitterStreamReceiver) contextTwitter.getBean("TwitterStreamReceiver");
+        twtReceiver.setHashtagTopics(args);
+        twtReceiver.setSender(senderService);
+        twtReceiver.run();
+
     }
 }

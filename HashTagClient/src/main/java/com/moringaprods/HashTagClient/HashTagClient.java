@@ -17,6 +17,7 @@ public class HashTagClient {
             LOGGER.error("No Hashtags to receive! Pick some please.");
             return;
         }
+        
         AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         HashtagConsumer consumer = (HashtagConsumer) context.getBean(HashtagConsumer.class);
