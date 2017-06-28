@@ -1,5 +1,5 @@
 ## Synopsis
-A set of micro services built on Kafka(Producer, Stream processor and Consumer) that monitors tweets provided hashtags.
+A set of micro services built on Kafka(Producer, Stream processor and Consumer) that monitor tweets for provided hashtags.
 
 ## Design considerations
  Rather than build a single monolithic application, this data pipeline is built using 3 micro-services (with assumption that some of the Hashtags will have very high (or exponential) volume). Breaking the application into these parts increases the scalability, maintainability (for example, one of the services can be replaced with a better implementation and without impacting the other two) and resiliency :
